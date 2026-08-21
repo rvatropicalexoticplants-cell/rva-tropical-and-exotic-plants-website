@@ -1,0 +1,685 @@
+/* ==========================================================================
+   THE CANOPY · design system
+   RVA Tropical & Exotic Plants
+
+   Editorial, not decorative. The surfaces are crisp, the type is large and
+   confident, the palette is mostly paper and navy with coral spent once per
+   screen. Depth comes from scale, whitespace and photography — not from
+   rounded corners or drop shadows.
+
+   The signature is THE DRAWN LINE: hairline rules that grow left-to-right as
+   they scroll into view. Section heads, link underlines, the events spine and
+   the milestone path all draw themselves. It reads as growth, which is the
+   subject, and it means the page is built from rules and air rather than from
+   boxes.
+
+   Two font weights per viewport: 600/700 (display) + 400 (body).
+   Six brand colors and nothing else.
+
+   This started as a byte-for-byte COPY of app/css/canopy.css, kept for the
+   marketing site (site/, deploys separately via GitHub Pages) so a visual-
+   system change would land in both on purpose via a diff, not drift
+   silently. As of 2026-08-21 it's been deliberately trimmed down to only
+   the selectors this site's own pages and site/js/site.js actually use —
+   roughly a third of app's copy — since the other two-thirds (app-only
+   surfaces like the portal dashboard, admin app-shell, trade/resonance/
+   exchange boards, the interactive cursor system) were dead weight shipped
+   to every visitor. A `diff` against app/css/canopy.css is no longer
+   meaningful; a new app-side visual-system rule needs a manual look to
+   decide whether the marketing site also needs it. Site-only additions
+   (gallery grid, EIN/address block, form success states) still live in
+   site/css/site.css instead of here.
+   ========================================================================== */
+/* Licensed Proxima Nova ships from Adobe Fonts — swap in the kit ID at deploy:
+   <link rel="stylesheet" href="https://use.typekit.net/XXXXXXX.css">          */
+:root {
+  /* ---- palette ---------------------------------------------------------- */
+  --canvas:      #F3F0E9;   /* warm paper — the ground */
+  --canvas-card: #FBF9F5;   /* a surface barely lifted off the paper */
+  --canvas-sunk: #E9E4D9;   /* recessed: form wells, tracks, inactive chips */
+  --navy:        #2C3E50;
+  --navy-soft:   #3E5568;
+  /* the day-mood fade (portal.html's applyDayMood) repoints --navy/--navy-soft
+     at the ink color for the current time of day, so headings and body copy
+     stay legible against a canvas that goes from paper to near-black. The
+     ~20 rules below that use navy as a fixed dark BAND background (masthead,
+     footer, feed/lightbox placeholders, this dropdown's on-navy option list)
+     read --navy-fixed instead, so those bands stay the brand navy they were
+     designed as regardless of the hour — otherwise night mode would repaint
+     them ivory and swallow their on-navy text. */
+  --navy-fixed:  #2C3E50;
+  /* .56 measured at ~3.0:1 against --canvas / --canvas-card — under the
+     4.5:1 AA floor for normal-size text, and this token carries meta/
+     secondary copy at 13-15px (well under the 18px "large text" cutoff
+     that would let 3:1 stand). .74 clears AA on both surfaces (4.71:1 on
+     --canvas, 4.92:1 on --canvas-card) while staying visibly lighter than
+     --navy-soft (6.82:1, body copy) and --navy (9.65:1, headings), so the
+     dim/soft/navy hierarchy this system relies on doesn't collapse. */
+  --navy-dim:    rgba(44,62,80,.74);
+  --navy-line:   rgba(44,62,80,.16);
+  --ivory:        #FAF3E0;
+  --on-navy:      var(--ivory);
+  --on-navy-dim:  rgba(250,243,224,.66);
+  --on-navy-line: rgba(250,243,224,.20);
+  --coral:       #FF6F61;
+  --coral-dim:   rgba(255,111,97,.42);
+  --coral-wash:  rgba(255,111,97,.08);
+  --coral-hover: #ff8275;
+  --ink:         #101C30;
+  --teal:        #008080;
+  --teal-hover:  #0a9696;
+  --teal-wash:   rgba(0,128,128,.08);
+  --blush:       #F5B7B1;
+  --blush-ink:   #A85662;
+
+  --ink-rgb: 18, 34, 58;
+
+  /* the hairline is the structural element in this system */
+  --rule:        rgba(44,62,80,.15);
+  --rule-strong: rgba(44,62,80,.34);
+  --rule-navy:   rgba(250,243,224,.20);
+
+  --photo-veil: linear-gradient(170deg, rgba(20,30,44,.34), rgba(20,30,44,.72));
+
+  --font-display: "proxima-nova", "Proxima Nova", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Open Sans", "Segoe UI", system-ui, sans-serif;
+
+  --shell: min(1360px, 92vw);
+
+  /* ONE section rhythm. Every page section used to carry its own inline
+     padding-top (3rem here, 5rem there) plus the odd margin-top, so the gaps
+     between blocks measured 0 / 0 / 39 / 0 / 80px and nothing lined up. Bands
+     bring their own padding-block; plain sections take this. */
+  --section-gap: clamp(4.5rem, 9vw, 8rem);
+
+  /* ---- geometry: crisp. Radius is a rounding error, not a style. -------- */
+  --r-xs: 2px;
+  --r-sm: 3px;
+  --r-md: 4px;
+  --r-pill: 999px;   /* reserved for genuinely circular things only */
+
+  /* ---- elevation: almost none. Depth is whitespace and scale. ----------- */
+  --shadow-sm: 0 1px 2px rgba(var(--ink-rgb), .05);
+  --shadow-md: 0 2px 10px rgba(var(--ink-rgb), .07);
+  --shadow-lg: 0 12px 40px rgba(var(--ink-rgb), .11);
+
+  /* ---- motion: long, calm, no overshoot ---------------------------------
+     Springs were the previous system's voice. This one eases out hard and
+     settles — expo curves, nothing bounces back. */
+  --ease-expo:  cubic-bezier(.16, 1, .3, 1);
+  --ease-power: cubic-bezier(.65, 0, .35, 1);
+  --ease-line:  cubic-bezier(.83, 0, .17, 1);
+  --dur-quick: .35s;
+  --dur-mid:   .75s;
+  --dur-slow:  1.2s;
+}
+/* ---- base ---------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+input, select, textarea { border-radius: var(--r-xs); }
+/* native smooth-scroll is OFF: the momentum layer in canopy.js owns scrolling
+   when it is active, and the two fight each other over anchor jumps */
+html { overflow-x: clip; }
+body {
+  background: var(--canvas);
+  color: var(--navy-soft);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+/* a flat ground with a whisper of grain — no drifting color fields */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  opacity: .022; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+img, svg { max-width: 100%; display: block; }
+h1, h2, h3, h4, button, .btn {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+p { max-width: 68ch; text-wrap: pretty; }
+small, .small { font-size: 15px; }
+a { color: var(--navy-soft); text-decoration: none; }
+/* link underline draws from the left — the same gesture as every rule here */
+.uline { position: relative; }
+.uline::after {
+  content: ""; position: absolute; left: 0; bottom: -2px; height: 1px; width: 100%;
+  background: currentColor; transform: scaleX(0); transform-origin: left;
+  transition: transform var(--dur-mid) var(--ease-expo);
+}
+.uline:hover::after, .uline:focus-visible::after { transform: scaleX(1); }
+:focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; }
+::selection { background: var(--coral); color: var(--ink); }
+.shell { width: var(--shell); margin-inline: auto; }
+/* ---- typographic voice ---------------------------------------------------
+   Display type is the loudest thing on the page by a wide margin. Tight
+   tracking, near-solid leading, and enough size that it has to be read
+   rather than scanned. */
+.display-xl {
+  font-size: clamp(3rem, 10.5vw, 8.5rem);
+  font-weight: 700;
+  line-height: .92; letter-spacing: -.042em; color: var(--navy);
+  text-wrap: balance;
+}
+.display-lg {
+  font-size: clamp(2.1rem, 5.6vw, 4.4rem);
+  font-weight: 700;
+  line-height: .98; letter-spacing: -.032em; color: var(--navy);
+  text-wrap: balance;
+}
+.display-md {
+  font-size: clamp(1.35rem, 2.8vw, 2.1rem);
+  font-weight: 600;
+  line-height: 1.12; letter-spacing: -.018em; color: var(--navy); text-wrap: balance;
+}
+/* the step below display-md — for headings inside cards and other narrow
+   columns, where display-md's 2.1rem ceiling is too big for the measure. */
+.display-sm {
+  font-size: clamp(1.1rem, 1.9vw, 1.4rem);
+  font-weight: 600;
+  line-height: 1.18; letter-spacing: -.014em; color: var(--navy); text-wrap: balance;
+}
+.accent { color: var(--coral); }
+.special-note { color: var(--blush-ink); }
+/* the micro-label: small, wide-tracked, uppercase. Used everywhere a section
+   needs naming without another headline competing with the display type. */
+.overline {
+  font-size: 11px; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--navy-dim); font-family: var(--font-display); font-weight: 600;
+}
+.margin-label {
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  font-size: 11px; letter-spacing: .32em; text-transform: uppercase;
+  color: var(--navy-dim); white-space: nowrap;
+}
+/* the section divider — brand mark at the left margin, hairline running the
+   full measure and drawing itself left-to-right (see canopyDivider() for why
+   it is no longer a centred stamp) */
+/* a navy-34% hairline is invisible on a navy ground — swap it if a divider
+   is ever placed inside one */
+/* ---- section rhythm ------------------------------------------------------
+   A plain section is spaced by --section-gap; a band is spaced by its own
+   padding-block and needs no margin on top of it. Two bands in a row would
+   otherwise read as one long slab, so that single case gets a seam. */
+/* ---- bands: full-bleed color blocks, square to the edge ------------------ */
+.band-ivory { background: var(--ivory);  color: var(--navy-soft); }
+.band-ivory .overline { color: var(--navy-dim); }
+.band-ivory .display-xl, .band-ivory .display-lg, .band-ivory .display-md { color: var(--navy); }
+.band-ivory .accent { color: var(--teal); }
+/* ---- 12-column layout grid ----------------------------------------------- */
+.grid-12 { display: grid; grid-template-columns: repeat(12, 1fr); }
+@media (max-width: 900px) {
+.grid-12 { grid-template-columns: 1fr; }
+.grid-12 > * { grid-column: 1 / -1 !important; }
+}
+/* ---- buttons: crisp blocks with a travelling fill ------------------------
+   No pills, no lift, no bounce. The fill wipes in from the left on hover —
+   the same left-to-right gesture as every rule in the system. */
+/* The label colour is FIXED and each fill is chosen so that one colour reads
+   on both the resting background and the arriving fill. Switching the label
+   colour on hover instead would be the obvious way to do this, and it is a
+   trap: the fill wipes across progressively while a colour swap happens to the
+   whole label at once, so mid-wipe you get half the word in the wrong colour
+   on the wrong ground. Fixed label, two safe grounds, no race. */
+.btn, .btn-ghost, .btn-teal {
+  display: inline-flex; align-items: center; justify-content: center; gap: .7rem;
+  cursor: pointer; border: 0; position: relative; overflow: hidden; isolation: isolate;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
+  padding: 1.15rem 2.2rem; border-radius: var(--r-xs);
+}
+.btn::before, .btn-ghost::before, .btn-teal::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--dur-mid) var(--ease-expo);
+}
+.btn:hover::before, .btn-ghost:hover::before, .btn-teal:hover::before,
+.btn:focus-visible::before, .btn-ghost:focus-visible::before, .btn-teal:focus-visible::before {
+  transform: scaleX(1);
+}
+/* ink label: readable on coral (8.9:1) and on ivory (16:1) */
+.btn { background: var(--coral); color: var(--ink); }
+.btn::before { background: var(--ivory); }
+/* navy label: readable on paper (9.9:1) and on ivory (10.1:1) */
+.btn-ghost { background: transparent; color: var(--navy); box-shadow: inset 0 0 0 1px var(--rule-strong); }
+.btn-ghost::before { background: var(--ivory); }
+.btn-ghost:hover, .btn-ghost:focus-visible { box-shadow: inset 0 0 0 1px var(--navy); }
+.btn-ghost:disabled { opacity: .4; cursor: default; }
+.btn-ghost:disabled::before { transform: scaleX(0); }
+/* ivory label: readable on teal (4.6:1 at this weight/size) and on ink (16:1) */
+.btn-teal { background: var(--teal); color: var(--ivory); }
+.btn-teal::before { background: var(--ink); }
+/* on a navy ground the ghost keeps an ivory label, so its fill has to stay
+   dark enough to read against — a light veil, not a light fill */
+.hero .btn-ghost { color: var(--ivory); box-shadow: inset 0 0 0 1px var(--rule-navy); }
+.hero .btn-ghost::before { background: rgba(250,243,224,.18); }
+.hero .btn-ghost:hover { box-shadow: inset 0 0 0 1px var(--ivory); }
+/* ---- masthead: a navy band carrying the coral mark ------------------------
+   Coral on navy is the brand's own pairing and the one people recognise, so
+   the mark gets the ground it belongs on rather than the page's paper. On
+   index.html this runs straight into the navy hero — deliberately, so the top
+   of the page reads as one navy field with the mark sitting in it. */
+.masthead-band { background: var(--navy-fixed); }
+.masthead {
+  display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+  padding: 1.5rem 0; color: var(--on-navy-dim);
+}
+.masthead nav { display: flex; align-items: center; gap: clamp(1.2rem, 2.6vw, 2.4rem); flex-wrap: wrap; }
+.masthead nav a {
+  position: relative; font-family: var(--font-display); font-weight: 600;
+  font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--on-navy-dim); white-space: nowrap; padding: .3rem 0;
+  transition: color var(--dur-quick) var(--ease-expo);
+}
+.masthead nav a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: currentColor; transform: scaleX(0); transform-origin: left;
+  transition: transform var(--dur-mid) var(--ease-expo);
+}
+.masthead nav a:hover { color: var(--on-navy); }
+.masthead nav a:hover::after { transform: scaleX(1); }
+.masthead nav a[aria-current="page"] { color: var(--coral); }
+.masthead nav a[aria-current="page"]::after { transform: scaleX(1); }
+.masthead .door { color: var(--coral); }
+.nav-toggle { display: none; }
+.brand { display: flex; align-items: center; gap: 1rem; }
+.brand img, .logo { object-fit: contain; max-width: 100%; }
+/* ---- the brand mark ------------------------------------------------------
+   The built-in lockup is painted by CSS through a mask (see LOGO in
+   canopy.js), so its colour follows `currentColor` and the brand rule can be
+   honoured with one asset: navy wherever it sits on paper, coral on a navy
+   ground. Uploaded logos stay real <img> elements and are unaffected. */
+.logo--mask {
+  display: block; height: 48px; aspect-ratio: 6841 / 1205;
+  background: currentColor;
+  -webkit-mask: url("../assets/logo-lockup.png") no-repeat center / contain;
+          mask: url("../assets/logo-lockup.png") no-repeat center / contain;
+}
+/* Coral, always — it is the recognition asset, so the mark does not change
+   with the ground. Every surface the lockup appears on is navy (masthead,
+   footer colophon, app bar, app sidebar), which is the brand's own pairing
+   and measures 4.1:1. */
+.logo--mask { color: var(--coral); }
+/* ---- hero: type at full scale on flat navy, no ornament ------------------ */
+.hero {
+  display: grid; grid-template-columns: repeat(12, 1fr);
+  padding: clamp(5rem, 13vw, 12rem) clamp(2rem, 5vw, 4.5rem) clamp(5rem, 10vw, 9rem);
+  position: relative;
+  background: var(--navy-fixed); color: var(--on-navy-dim);
+  width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw);
+}
+/* the copy sits above the canopy */
+.hero-copy, .hero .margin-label { position: relative; z-index: 1; }
+.hero .overline { color: var(--on-navy-dim); }
+.hero .display-xl, .hero .display-lg, .hero .display-md { color: var(--on-navy); }
+.hero p { color: var(--on-navy-dim); }
+.hero-copy { grid-column: 2 / 10; align-self: center; overflow-wrap: break-word; }
+.hero-copy .hang { display: block; padding-left: clamp(1.5rem, 7vw, 6rem); }
+.hero .margin-label { position: absolute; right: clamp(1rem, 3vw, 2.4rem); top: 16%; color: var(--on-navy-dim); }
+.hero-leaf {
+  display: inline-block; width: 15px; height: 15px; margin-right: .7rem; vertical-align: -2px;
+  background: var(--coral); border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+}
+.page-band { position: relative; }
+/* ---- the events rail: an index, ruled ------------------------------------
+   Each event is a row on a hairline grid with an oversized date numeral.
+   Nothing is a card; the structure is the rules and the numbering. */
+.timeline { position: relative; padding: 1rem 0 4rem; }
+.ev-rail { border-top: 1px solid var(--rule-strong); }
+/* --ev-gutter keeps the row's content clear of the 2px coral spine the open
+   state draws down the left edge, and is the single value the head padding and
+   the detail indent are both derived from, so they can never drift apart */
+.ev-row { position: relative; border-bottom: 1px solid var(--rule); --ev-gutter: 1.5rem; }
+.ev-row::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+  background: var(--coral); transform: scaleY(0); transform-origin: top;
+  transition: transform var(--dur-mid) var(--ease-expo);
+}
+.ev-row.open::before { transform: scaleY(1); }
+.ev-head {
+  position: relative; display: grid;
+  grid-template-columns: 6rem 1fr auto; align-items: baseline;
+  gap: 0 clamp(1.4rem, 4vw, 3.5rem);
+  width: 100%; text-align: left; background: none; border: 0; cursor: pointer;
+  padding: clamp(1.6rem, 3vw, 2.6rem) 0 clamp(1.6rem, 3vw, 2.6rem) var(--ev-gutter);
+  color: inherit; font-family: inherit;
+  transition: padding-left var(--dur-mid) var(--ease-expo);
+}
+.ev-row:hover .ev-head, .ev-head:focus-visible { padding-left: calc(var(--ev-gutter) + 1rem); }
+.ev-date { text-align: left; }
+.ev-date .day {
+  display: block;
+  font-family: var(--font-display); font-weight: 700; line-height: .85;
+  font-size: clamp(2.4rem, 5vw, 3.6rem); color: var(--navy);
+  font-variant-numeric: tabular-nums; letter-spacing: -.04em;
+  transition: color var(--dur-quick) var(--ease-expo);
+}
+.ev-row:hover .ev-date .day, .ev-row.open .ev-date .day { color: var(--coral); }
+.ev-date .mo { display: block; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--navy-dim); margin-top: .3rem; }
+.ev-title {
+  display: block; font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(1.3rem, 3vw, 2.1rem); line-height: 1.1; letter-spacing: -.026em;
+  color: var(--navy);
+}
+.ev-meta { display: block; font-size: 14px; color: var(--navy-dim); margin-top: .4rem; }
+.ev-kind {
+  display: block; font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--teal); font-family: var(--font-display); font-weight: 700; margin-bottom: .5rem;
+}
+/* a plus that becomes a minus — the quietest possible open/close affordance */
+/* filter chips: text with a rule, not buttons in bubbles */
+/* ---- homepage section devices -------------------------------------------- */
+.idx-head-spine {
+  display: grid; grid-template-columns: 22% 1fr; gap: 0 clamp(2rem, 5vw, 4rem);
+  align-items: end; padding-bottom: 2rem; position: relative;
+}
+.idx-head-spine .overline { text-align: right; padding-right: clamp(1rem, 3vw, 2.5rem); }
+@media (max-width: 900px) {
+.idx-head-spine { grid-template-columns: 1fr; }
+.idx-head-spine .overline { text-align: left; padding: 0 0 .6rem; }
+}
+/* The label stacks ABOVE the headline, like every other section head here
+   (.idx-head-spine). It used to sit inline to the left of the headline
+   with an underline of its own, which put two rules at two different
+   heights next to each other and read as a broken line rather than a
+   label. The section's own drawn rule is the only underline it needs. */
+/* left:0 used to sit exactly on top of the vertical border-left rule
+   these quotes also carry (inline style, index.html) — the 6px dot and
+   the 2px line visually fused into one blob touching the text. Shifting
+   the dot clear of the line's edge gives both marks their own space. */
+.idx-rsvp-slot {
+  position: relative; display: grid; grid-template-columns: 22% 1fr; gap: 0 clamp(2rem, 5vw, 4rem);
+  /* no bottom spacing here at all used to mean the white alert-card sat
+     flush against wherever the next section's background color starts
+     — this is the block's own closing space, not the next section's
+     opening space, so it needs to be set here. */
+  padding-top: 3rem; padding-bottom: clamp(3rem, 6vw, 5rem); border-top: 1px solid var(--rule);
+}
+.idx-rsvp-slot .idx-rsvp-label { text-align: right; padding-right: clamp(1rem, 3vw, 2.5rem); }
+@media (max-width: 900px) {
+.idx-rsvp-slot { grid-template-columns: 1fr; }
+.idx-rsvp-slot .idx-rsvp-label { text-align: left; padding: 0 0 .8rem; }
+}
+@media (min-width: 901px) {
+.hero > .hero-copy { grid-column: 2 / 8; }
+.hero > .hero-copy h1.display-xl { font-size: clamp(2.6rem, 6.4vw, 5.6rem); }
+}
+/* ---- the daily showcase: a horizontal ruled rail -------------------------- */
+.tl-photo {
+  position: relative; max-width: none; aspect-ratio: 3 / 2;
+  overflow: hidden; margin: 0 0 1rem; background: var(--navy-fixed);
+}
+/* event cover photos are sized like Facebook event covers (1920x1005) —
+   match that ratio here so the crop matches what the organizer expects
+   from a photo cropped for that. */
+.tl-photo--event { aspect-ratio: 1920 / 1005; }
+.tl-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1.6s var(--ease-expo); }
+.tl-photo:hover img { transform: scale(1.04); }
+.tl-photo .veil { position: absolute; inset: 0; background: var(--photo-veil); }
+.tl-photo .veil-label {
+  position: absolute; left: 1.2rem; bottom: 1rem; color: var(--on-navy);
+  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+}
+/* ---- alert surfaces ------------------------------------------------------- */
+.alert-card {
+  background: var(--canvas-card); color: var(--navy);
+  border: 1px solid var(--rule); border-top: 2px solid var(--teal);
+  padding: clamp(2rem, 4vw, 3rem);
+}
+.alert-card h3, .alert-card h4 { color: var(--navy); }
+.alert-card p { color: var(--navy-soft); }
+.alert-card small { color: var(--navy-dim); }
+/* ---- the three "doors" on the front page --------------------------------- */
+/* each door is a whole-card link, so the target is the card, not a small
+   button inside it. the per-door accent is set inline on border-top-color. */
+/* auto-fit rather than a fixed 3, so the same row works for the two-door
+   version at the foot of story.html without needing a modifier class. */
+.front-door-row {
+  display: grid; gap: 1.2rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+}
+@media (max-width: 900px) {
+.front-door-row { grid-template-columns: 1fr; }
+}
+.front-door {
+  display: flex; flex-direction: column;
+  padding: clamp(1.5rem, 2.4vw, 2rem);
+  text-decoration: none;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.front-door:hover, .front-door:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(44, 62, 80, .12);
+  border-color: var(--rule-strong);
+}
+.front-door p { margin: 0; }
+/* pins the call-to-action to the bottom edge so it lines up across all three
+   doors even when the copy above runs to different lengths. */
+.front-door .front-door-go {
+  margin-top: auto; padding-top: 1.1rem;
+  font-family: var(--font-display); font-weight: 600; font-size: 14px;
+  color: var(--coral);
+}
+.front-door:hover .front-door-go, .front-door:focus-visible .front-door-go { text-decoration: underline; }
+/* ---- form fields: ruled, not boxed ---------------------------------------- */
+.field { display: block; margin-bottom: 1.8rem; }
+/* author styles beat the browser's own [hidden]{display:none} regardless of
+   specificity, so `.field` unconditionally setting display:block was
+   quietly overriding `hidden` on every conditionally-shown field that
+   also carries this class (apply.html's "what is it?", portal.html's
+   "where to find you," several in admin.html) — they stayed visible no
+   matter what toggled the attribute. */
+.field[hidden] { display: none; }
+.field span {
+  display: block; font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+  margin-bottom: .6rem; color: var(--navy-dim);
+  font-family: var(--font-display); font-weight: 700;
+}
+.field input, .field select, .field textarea {
+  width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--rule-strong);
+  border-radius: 0;
+  font-family: var(--font-body); font-size: 17px; padding: .6rem 0; color: var(--navy);
+  transition: border-color var(--dur-quick) var(--ease-expo);
+}
+.field input::placeholder, .field textarea::placeholder { color: var(--navy-dim); }
+.field select { background-color: transparent; }
+.field select option, .field select optgroup { background-color: var(--canvas-card); color: var(--navy); }
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; border-bottom-color: var(--coral); border-bottom-width: 2px; padding-bottom: calc(.6rem - 1px);
+}
+/* #map-inspector sits on a light card nested inside .on-navy — override the
+   dark-background field colors above so its labels/inputs stay legible. */
+#map-inspector.field span, #map-inspector .field span { color: var(--navy-dim); }
+#map-inspector.field input, #map-inspector .field input,
+#map-inspector.field select, #map-inspector .field select,
+#map-inspector.field textarea, #map-inspector .field textarea {
+  color: var(--navy); border-bottom-color: var(--rule-strong);
+}
+#map-inspector .field select option { background-color: var(--canvas-card); color: var(--navy); }
+.zero-state { padding: 4rem 0; color: var(--navy-dim); font-size: 17px; max-width: 46ch; border-top: 1px solid var(--rule); }
+/* ---- loading skeletons ---------------------------------------------------- */
+@keyframes skeleton-shimmer { 0% { opacity: .35; } 50% { opacity: .8; } 100% { opacity: .35; } }
+.skeleton-block {
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+  background: currentColor; opacity: .14; border-radius: 0;
+}
+.tl-entry-skeleton { height: 140px; margin-bottom: 1px; color: var(--rule-strong); }
+@media (prefers-reduced-motion: reduce) {
+.skeleton-block { animation: none; opacity: .14; }
+}
+/* ---- footer ---------------------------------------------------------------- */
+.footer-band { background: var(--navy-fixed); margin-top: 6rem; }
+.site {
+  padding: clamp(3.5rem, 7vw, 6rem) 0 2.5rem; display: grid; grid-template-columns: repeat(12, 1fr);
+  gap: 2.5rem 1rem; color: var(--on-navy-dim);
+}
+.site .foot-brand { grid-column: 1 / 7; }
+.site .foot-brand .brand { margin-bottom: 1.6rem; }
+.site .sig { color: var(--on-navy-dim); font-size: 16px; max-width: 44ch; }
+.site .foot-col { grid-column: span 3; display: flex; flex-direction: column; align-items: flex-start; gap: .7rem; font-size: 14px; }
+.site .foot-col h4 {
+  font-size: 10px; letter-spacing: .24em; text-transform: uppercase;
+  color: rgba(250,243,224,.45); margin-bottom: .6rem;
+}
+.site .foot-col a { color: var(--on-navy); font-size: 14px; transition: color var(--dur-quick) var(--ease-expo); }
+.site .foot-col a:hover { color: var(--coral); }
+.site .foot-col p { color: var(--on-navy-dim); line-height: 1.6; }
+.site .foot-baseline {
+  grid-column: 1 / -1; margin-top: 2rem; padding-top: 1.4rem;
+  border-top: 1px solid var(--rule-navy);
+  font-size: 12px; letter-spacing: .04em; color: var(--on-navy-dim); max-width: none;
+}
+@media (max-width: 900px) {
+.site .foot-brand, .site .foot-col { grid-column: 1 / -1; }
+}
+/* ---- lightbox ------------------------------------------------------------------ */
+.lightbox-overlay {
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(20, 30, 44, .93);
+  display: flex; align-items: center; justify-content: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  animation: lb-fade var(--dur-mid) var(--ease-expo);
+}
+@keyframes lb-fade { from { opacity: 0; } to { opacity: 1; } }
+.lightbox-panel {
+  position: relative; background: var(--canvas-card); color: var(--navy);
+  max-width: min(80rem, 100%); max-height: 100%; width: 100%;
+  display: grid; grid-template-columns: 1.5fr 1fr;
+  overflow: hidden;
+  animation: lb-rise var(--dur-slow) var(--ease-expo);
+}
+@keyframes lb-rise { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
+.lightbox-media { background: var(--navy-fixed); display: flex; align-items: center; justify-content: center; min-height: 20rem; max-height: 88vh; }
+.lightbox-media img { max-width: 100%; max-height: 88vh; width: auto; height: auto; object-fit: contain; display: block; }
+.lightbox-caption { font-size: 16px; color: var(--navy-soft); margin-bottom: 1.4rem; }
+.lightbox-close {
+  position: absolute; top: 1rem; right: 1rem; z-index: 1;
+  background: none; border: 1px solid var(--rule-strong);
+  width: 2.6rem; height: 2.6rem; border-radius: 0;
+  font-size: 1.2rem; line-height: 1; cursor: pointer; color: var(--navy);
+  transition: background var(--dur-quick) var(--ease-expo), color var(--dur-quick) var(--ease-expo);
+}
+.lightbox-close:hover { background: var(--navy-fixed); color: var(--ivory); }
+@media (max-width: 720px) {
+.lightbox-panel { grid-template-columns: 1fr; overflow-y: auto; }
+.lightbox-media, .lightbox-media img { max-height: 46vh; }
+}
+/* ==========================================================================
+   MOTION
+   ========================================================================== */
+/* Momentum scrolling is implemented in canopy.js by easing the REAL scroll
+   position, not by translating a wrapper element. The wrapper approach is the
+   more common one, but it breaks `position: sticky` — a sticky child of a
+   transformed ancestor sticks to that ancestor rather than the viewport, which
+   would strand the directory's filter rail and the portal sidebar. Easing
+   window.scrollY keeps sticky, anchor jumps and find-in-page all intact. */
+/* scroll reveal — a long fade and a short rise. No scale, no overshoot.
+   Applied to nearly every block on the homepage, so the per-element
+   distance needs to stay small — at the old 38-42px, a page full of
+   reveals read as everything on screen shifting at once instead of a
+   quiet fade. Mostly opacity now, with just a hint of motion. */
+.reveal {
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-expo), transform var(--dur-slow) var(--ease-expo);
+  transition-delay: calc(var(--reveal-i, 0) * 90ms);
+  will-change: transform, opacity;
+}
+.reveal       { transform: translateY(10px); }
+.reveal.in { opacity: 1; transform: none; will-change: auto; }
+/* headline reveal: each line rises out of its own clipped band.
+   display-lg's line-height (1.12) is tighter than these fonts'
+   natural descender space, so overflow:hidden here was clipping any
+   "g"/"y"/"p"/"q" in the last line right at the box edge — padding
+   gives real descenders room without weakening the slide-up clip. */
+.line-reveal { display: block; overflow: hidden; padding-bottom: .18em; margin-bottom: -.18em; }
+.line-reveal > span {
+  display: block; transform: translateY(105%);
+  transition: transform var(--dur-slow) var(--ease-expo);
+  transition-delay: calc(var(--reveal-i, 0) * 100ms);
+}
+.line-reveal.in > span { transform: none; }
+/* ---- scroll parallax ------------------------------------------------------
+   Uses the independent `translate` property, NOT transform: nearly every
+   element worth parallaxing already carries a transform from .reveal or a
+   hover state, and writing transform here would cancel whichever lost the
+   cascade. `translate` composes instead. */
+[data-parallax] { translate: 0 var(--sy, 0px); will-change: translate; }
+/* ---- the gallery — a deliberately uneven grid (JS assigns each tile one
+   of three sizes on a repeating rhythm, not a strict masonry library) so it
+   reads as a wall of real photos rather than a uniform product grid. Every
+   tile is a real <button> (keyboard/screen-reader operable, opens the
+   lightbox), not a bare <img>. */
+.gallery-grid {
+  display: grid; grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: 9vw; gap: .6rem;
+}
+@media (max-width: 900px) {
+.gallery-grid { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 26vw; }
+}
+/* ---- app-shell panel arrival ------------------------------------------------ */
+[data-panel]:not([hidden]) { animation: panel-in var(--dur-mid) var(--ease-expo) both; }
+@keyframes panel-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+* { animation: none !important; transition: none !important; }
+.reveal { opacity: 1; transform: none; }
+.line-reveal > span { transform: none; }
+[data-parallax] { translate: none; }
+}
+/* ---- responsive --------------------------------------------------------------- */
+@media (max-width: 900px) {
+body { font-size: 16px; }
+/* the desktop scale leans on a lot of small, wide-tracked label text
+     (overlines, .small body copy, button labels) that reads fine at arm's
+     length on a monitor but gets genuinely hard to read held in a hand —
+     nudged up here rather than at every individual declaration site. */
+small, .small { font-size: 16px; }
+.overline { font-size: 12px; }
+.btn, .btn-ghost, .btn-teal { font-size: 14px; }
+/* the overline sweep above only caught .overline itself — every OTHER
+     small-caps label class (section tabs, milestone dates, event
+     day/month, sidebar/nav labels, status chips) hardcodes its own
+     10-11px and was still unreadable held in a hand. One catch-all
+     rather than touching 40-odd individual declarations. */
+.margin-label, .ev-date .mo {
+    font-size: 13px !important;
+  }
+.hero-copy { grid-column: 1 / 13; }
+.hero .margin-label { display: none; }
+/* stacked on a phone, so the detail returns to the row's own gutter */
+.ev-head { grid-template-columns: 4.2rem 1fr auto; }
+/* the event form's bespoke 4-column rows are set inline, and inline beats a
+     plain selector — this needs !important or it is simply ignored */
+#event-form > div { grid-template-columns: 1fr !important; }
+/* a grid item defaults to min-width:auto — one wide form row is enough to
+     hold the whole shell open past the phone's actual width */
+/* "more" sheet — plain destination links (Meet Partners/Receipts/Help
+     folded off the main bar), not a nested shortcut menu. Same flat,
+     square-cornered, top-border-only treatment as the masthead's own
+     mobile dropdown below, so it reads as one consistent nav language. */
+/* author styles beat the browser's own [hidden]{display:none} regardless
+     of specificity — the unconditional display:flex above was quietly
+     keeping this sheet visible always, hidden property or not. */
+}
+@media (max-width: 1020px) {
+.masthead { position: relative; flex-wrap: nowrap; }
+.nav-toggle {
+    display: flex; flex-direction: column; justify-content: center; align-items: stretch;
+    gap: 6px; width: 30px; height: 24px; padding: 0;
+    background: none; border: 0; cursor: pointer; flex: none;
+  }
+.nav-toggle span { display: block; height: 1px; background: var(--on-navy-dim); transition: transform .35s var(--ease-expo), opacity .35s var(--ease-expo); }
+.nav-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle.open span:nth-child(2) { opacity: 0; }
+.nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.masthead nav {
+    display: none; flex-direction: column; align-items: stretch; gap: 0;
+    position: absolute; top: 100%; left: 0; right: 0; z-index: 400;
+    background: var(--navy-fixed); border-top: 1px solid var(--rule-navy);
+    box-shadow: var(--shadow-lg);
+  }
+.masthead nav.open { display: flex; }
+.masthead nav a { padding: 1.2rem clamp(1rem, 4vw, 2rem); border-bottom: 1px solid var(--rule-navy); }
+}

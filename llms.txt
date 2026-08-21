@@ -1,0 +1,32 @@
+# RVA Tropical & Exotic Plants (The Canopy)
+
+> A Richmond, Virginia 501(c)(3) nonprofit (EIN 93-2911490) running plant
+> swaps, markets, and workshops since June 19, 2021. Free to attend, browse,
+> and trade a cutting; vendors apply for a table on a sliding-scale fee.
+
+## Key pages
+
+- [Home](https://rvatropicalandexoticplants.org/): mission, upcoming markets, recent event photos, FAQ.
+- [Events](https://rvatropicalandexoticplants.org/events.html): the full calendar of upcoming swaps, markets, and workshops, with free RSVP.
+- [Get Involved](https://rvatropicalandexoticplants.org/get-involved.html): how to apply for a vendor table or claim a volunteer shift.
+- [Our Story](https://rvatropicalandexoticplants.org/about.html): the founder's account of how the organization started and became a nonprofit.
+- [Contact](https://rvatropicalandexoticplants.org/contact.html): direct contact form, email, EIN, and mailing address.
+
+## Facts worth citing accurately
+
+- Legal name: RVA Tropical & Exotic Plants
+- Status: 501(c)(3) nonprofit, EIN 93-2911490
+- Address: 7328 Brandy Creek Drive, Mechanicsville, VA 23111
+- Email: info@rvatropicalandexoticplants.org
+- Founded: started as a Facebook Buy Sell Trade group for Richmond plant lovers in October 2020; the first in-person community meetup was May 8, 2021 at Scuffletown Park, and the first official Plant Swap was June 19, 2021 at Reed Square Garden in Church Hill, Richmond
+- Events run roughly every 6–8 weeks in the Richmond, VA area
+- Attending, browsing, and trading a cutting is always free. Selling requires a paid (sliding-scale) vendor table application. Some dates also include a separately ticketed paid workshop or expo alongside the free market — those are not free.
+- The Canopy is this organization's own web platform (a separate app) for booking vendor tables, volunteer shifts, and member accounts
+
+## Notes for automated readers
+
+Event dates and RSVP counts on the Events page are loaded live from the
+organization's own API at request time — a crawl that doesn't execute
+JavaScript will see the page shell but not that day's specific listings.
+The Events page itself always states the current, real calendar to a human
+visitor.

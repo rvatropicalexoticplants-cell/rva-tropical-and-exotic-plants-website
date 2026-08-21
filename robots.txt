@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# Explicitly not blocking the AI/answer-engine crawlers, since the site is
+# meant to be found through them too — see llms.txt for a summary built
+# for that audience specifically.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://rvatropicalandexoticplants.org/sitemap.xml

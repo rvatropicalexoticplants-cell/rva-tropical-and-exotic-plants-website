@@ -1,0 +1,113 @@
+/* ==========================================================================
+   Marketing-site-only additions on top of canopy.css. Anything that belongs
+   to the shared design system lives there instead — this file is just the
+   handful of things unique to a public, backend-less marketing page: the
+   photo gallery grid, the org-details block (EIN/address), form states, and
+   the FAQ accordion.
+   ========================================================================== */
+
+/* ---- event rows on this site are always-expanded (no accordion — there's
+   no session/admin state to hide behind a click here), so they reuse
+   canopy.css's .ev-row/.ev-head/.ev-date/.ev-title/.ev-kind/.ev-meta
+   exactly but need their own detail-body class: canopy.css's own
+   .ev-detail-inner is opacity:0 by default and only reveals on
+   .ev-row.open, which this site never sets. ---- */
+.ev-body { padding: 0 0 1.6rem calc(var(--ev-gutter, 1.5rem) + 6rem + clamp(1.4rem, 4vw, 3.5rem)); max-width: 60ch; }
+.ev-body--photo { max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.4rem, 4vw, 3.5rem); }
+@media (max-width: 900px) {
+  .ev-body { padding-left: var(--ev-gutter, 1.5rem); }
+  .ev-body--photo { grid-template-columns: 1fr; }
+}
+
+/* canopy.css's .lightbox-overlay sets display:flex unconditionally — an
+   author rule beats the browser's own [hidden]{display:none} regardless of
+   specificity (same gotcha already documented for .field[hidden] there),
+   so without this override the lightbox stays visible, full-screen, the
+   whole time regardless of its hidden attribute. */
+.lightbox-overlay[hidden] { display: none; }
+
+/* ---- gallery: a set index of squares, same spirit as the Grower
+   Directory's ruled rows — numbered by nothing, just photography doing the
+   work. No captions crowd the image; a caption appears on hover/focus over
+   a veil, same treatment as the timeline's own event photos. ---- */
+.gallery-grid {
+  display: grid; grid-auto-flow: dense;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 1.4rem;
+}
+.gallery-item {
+  position: relative; aspect-ratio: 1; overflow: hidden; background: var(--canvas-sunk);
+  cursor: pointer;
+}
+/* every 5th tile runs wide — a mosaic, not a spreadsheet. Widening rather
+   than also spanning rows keeps the grid's auto row-sizing simple and
+   predictable (no aspect-ratio fights between a tall item and its
+   1x1 neighbors sharing the same row). */
+.gallery-item--big { grid-column: span 2; aspect-ratio: 2/1; }
+@media (max-width: 620px) { .gallery-item--big { grid-column: span 2; } }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease-expo); }
+.gallery-item:hover img, .gallery-item:focus-visible img { transform: scale(1.06); }
+.gallery-item:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+.gallery-cap {
+  position: absolute; inset: auto 0 0 0; padding: .9rem 1rem .8rem;
+  background: var(--photo-veil); color: var(--ivory); font-size: 13px;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity var(--dur-quick) var(--ease-expo), transform var(--dur-quick) var(--ease-expo);
+}
+.gallery-item:hover .gallery-cap, .gallery-item:focus-within .gallery-cap { opacity: 1; transform: translateY(0); }
+.gallery-empty { color: var(--navy-dim); }
+
+/* ---- org details: EIN/address/contact, set as a plain definition list so
+   it reads correctly to a screen reader and to a crawler looking for it —
+   never an image or a decorative card that would hide the actual text. ---- */
+.org-details { display: flex; flex-wrap: wrap; gap: 2.4rem 3rem; }
+.org-details dt { font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--teal); margin-bottom: .3rem; }
+.org-details dd { color: var(--navy-dim); }
+.band-navy .org-details dt { color: var(--on-navy-dim); }
+.band-navy .org-details dd { color: var(--on-navy); }
+
+/* ---- forms: RSVP/newsletter/contact all share .field from canopy.css;
+   this is just the submit-state feedback each one needs. ---- */
+.form-note { font-size: 15px; margin-top: .8rem; }
+.form-note.ok { color: var(--teal); }
+.form-note.err { color: #a33; }
+/* the honeypot — present in the DOM for a bot to fill, invisible and
+   unreachable by tab order for a real visitor */
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* ---- FAQ accordion: same ruled-row language as the events timeline,
+   one open row at a time, no plus/minus icon — the caret already used
+   across the app for expand/collapse. ---- */
+.faq-row { border-bottom: 1px solid var(--rule); }
+.faq-q {
+  width: 100%; text-align: left; background: none; border: 0; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: 1.3rem 0; font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; color: var(--navy);
+}
+.faq-caret { flex: none; width: 10px; height: 10px; border-right: 2px solid var(--navy-dim); border-bottom: 2px solid var(--navy-dim); transform: rotate(45deg); transition: transform var(--dur-quick) var(--ease-expo); }
+.faq-row.open .faq-caret { transform: rotate(-135deg); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height var(--dur-mid) var(--ease-expo); }
+.faq-row.open .faq-a { max-height: 40rem; }
+.faq-a p { padding: 0 0 1.4rem; color: var(--navy-dim); max-width: 60ch; }
+
+/* ---- newsletter strip: the footer's own signup, kept to one line of
+   input + button so it reads as a small ask, not a second form on the page. ---- */
+.newsletter-row { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: 1rem; }
+.newsletter-row input {
+  flex: 1; min-width: 14rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--rule-strong); border-radius: var(--r-xs);
+  background: var(--canvas-card);
+  font-family: var(--font-body); font-size: 15px; color: var(--navy);
+  transition: border-color var(--dur-quick) var(--ease-expo);
+}
+.newsletter-row input::placeholder { color: var(--navy-dim); }
+.newsletter-row input:focus { outline: none; border-color: var(--coral); }
+.footer-band .newsletter-row input {
+  background: rgba(250,243,224,.06); border-color: var(--rule-navy); color: var(--on-navy);
+}
+.footer-band .newsletter-row input::placeholder { color: var(--on-navy-dim); }
+
+@media (max-width: 900px) {
+  .org-details { gap: 1.6rem 2rem; }
+}
