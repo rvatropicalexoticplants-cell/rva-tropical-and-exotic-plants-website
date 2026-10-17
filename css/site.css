@@ -1,0 +1,219 @@
+/* ==========================================================================
+   Marketing-site-only additions on top of canopy.css. Anything that belongs
+   to the shared design system lives there instead — this file is just the
+   handful of things unique to a public, backend-less marketing page: the
+   photo gallery grid, the org-details block (EIN/address), form states, and
+   the FAQ accordion.
+   ========================================================================== */
+
+/* ---- the intro panel at the top of every inner page. Its padding and the
+   gap below it used to be one inline style pasted into four pages, with the
+   bottom padding (2.5rem) smaller than the top (up to 4rem) so the text sat
+   visibly high in its own box. One rule, even all the way round; the gap
+   under it is the same clamp, which is what canopy.css's .page-band +
+   section rule counts on. ---- */
+.page-band {
+  padding: clamp(2.5rem, 6vw, 4rem) clamp(1.4rem, 4vw, 3rem);
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* ---- placeholder while a first-ever visit waits on the API (see
+   loadEvents in site.js). Three ruled rows the height of real event rows,
+   so the page doesn't jump when the calendar arrives; a slow pulse, and the
+   reduced-motion rule in canopy.css already switches it off. ---- */
+.ev-skeleton { border-top: 1px solid var(--rule-strong); }
+.ev-skeleton span {
+  display: block; height: clamp(6rem, 11vw, 8.5rem);
+  border-bottom: 1px solid var(--rule); background: var(--canvas-sunk);
+  animation: ev-skeleton-pulse 1.8s var(--ease-power) infinite;
+}
+.ev-skeleton span:nth-child(2) { animation-delay: .2s; }
+.ev-skeleton span:nth-child(3) { animation-delay: .4s; }
+@keyframes ev-skeleton-pulse { 0%, 100% { opacity: .35; } 50% { opacity: .7; } }
+
+/* ---- event rows on this site are always-expanded (no accordion — there's
+   no session/admin state to hide behind a click here), so they reuse
+   canopy.css's .ev-row/.ev-head/.ev-date/.ev-title/.ev-kind/.ev-meta
+   exactly but need their own detail-body class: canopy.css's own
+   .ev-detail-inner is opacity:0 by default and only reveals on
+   .ev-row.open, which this site never sets. ---- */
+.ev-body { padding: 0 0 1.6rem calc(var(--ev-gutter, 1.5rem) + 6rem + clamp(1.4rem, 4vw, 3.5rem)); max-width: 60ch; }
+.ev-body--photo { max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.4rem, 4vw, 3.5rem); }
+@media (max-width: 900px) {
+  .ev-body { padding-left: var(--ev-gutter, 1.5rem); }
+  .ev-body--photo { grid-template-columns: 1fr; }
+}
+
+/* canopy.css's .lightbox-overlay sets display:flex unconditionally — an
+   author rule beats the browser's own [hidden]{display:none} regardless of
+   specificity (same gotcha already documented for .field[hidden] there),
+   so without this override the lightbox stays visible, full-screen, the
+   whole time regardless of its hidden attribute. */
+.lightbox-overlay[hidden] { display: none; }
+
+/* ---- gallery: a set index of squares, same spirit as the Grower
+   Directory's ruled rows — numbered by nothing, just photography doing the
+   work. No captions crowd the image; a caption appears on hover/focus over
+   a veil, same treatment as the timeline's own event photos. ---- */
+.gallery-grid {
+  display: grid; grid-auto-flow: dense;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 1.4rem;
+  /* canopy.css gives .gallery-grid fixed row heights (9vw, 26vw on small
+     screens) for the app's own gallery. Tiles here size themselves with
+     aspect-ratio, so fixed rows shorter than a tile make the rows overlap. */
+  grid-auto-rows: auto;
+}
+/* two columns on a phone, so a wide tile is a full-width banner and the
+   rest sit side by side (auto-fill would give one column below ~28rem,
+   and a span-2 tile in a one-column grid makes a stray implicit column) */
+@media (max-width: 620px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: .8rem; } }
+.gallery-item {
+  position: relative; aspect-ratio: 1; overflow: hidden; background: var(--canvas-sunk);
+  cursor: pointer;
+}
+/* every 5th tile runs wide — a mosaic, not a spreadsheet. Widening rather
+   than also spanning rows keeps the grid's auto row-sizing simple and
+   predictable (no aspect-ratio fights between a tall item and its
+   1x1 neighbors sharing the same row). */
+.gallery-item--big { grid-column: span 2; aspect-ratio: 2/1; }
+@media (max-width: 620px) { .gallery-item--big { grid-column: span 2; } }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease-expo); }
+.gallery-item:hover img, .gallery-item:focus-visible img { transform: scale(1.06); }
+.gallery-item:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+.gallery-cap {
+  position: absolute; inset: auto 0 0 0; padding: .9rem 1rem .8rem;
+  background: var(--photo-veil); color: var(--ivory); font-size: 13px;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity var(--dur-quick) var(--ease-expo), transform var(--dur-quick) var(--ease-expo);
+}
+.gallery-item:hover .gallery-cap, .gallery-item:focus-within .gallery-cap { opacity: 1; transform: translateY(0); }
+.gallery-empty { color: var(--navy-dim); }
+/* the plain-words line above a photo gallery: what the photos are, who took
+   them, and how to ask for one to come down. Quiet type, no button. */
+.gallery-note { max-width: 62ch; margin: 0 0 1.6rem; color: var(--navy-dim); font-size: 15px; line-height: 1.7; }
+.gallery-note + .gallery-note { margin-top: -.8rem; }
+/* a photo set into the story text, with its caption and credit underneath */
+.story-photo { margin: 2.2rem 0; }
+.story-photo img { display: block; width: 100%; height: auto; background: var(--canvas-sunk); }
+.story-photo figcaption { margin-top: .7rem; font-size: 14px; color: var(--navy-dim); }
+
+/* ---- hero photography -------------------------------------------------------
+   The navy hero stays flat and type-led; the right-hand columns carry three
+   plain, square-cornered photographs. Only plants and a room with nobody
+   identifiable in it go here: this is the most promotional spot on the site,
+   and the people photos are kept to the dated, credited galleries lower down. */
+/* with photographs beside it the headline column is narrower, so the type
+   steps down a size and the padding comes in; the point is that the
+   headline, the buttons, the next market and the pictures all land on the
+   first screen of a laptop instead of the buttons sitting below it */
+.hero { padding-top: clamp(2.5rem, 5vw, 4.5rem); padding-bottom: clamp(3rem, 5vw, 4.5rem); }
+@media (min-width: 901px) {
+  .hero > .hero-copy h1.display-xl { font-size: clamp(2.4rem, 4.8vw, 4.6rem); }
+}
+.hero-photos { position: relative; z-index: 1; animation: hp-in .8s var(--ease-expo) both; }
+/* a slide-up only, never an opacity fade: the largest picture on the page is
+   what the browser times as "loaded", and it should count from the first frame */
+@keyframes hp-in { from { transform: translateY(16px); } }
+@media (prefers-reduced-motion: reduce) { .hero-photos { animation: none; } }
+.hero-photos-grid {
+  display: grid; grid-template-columns: 1.1fr 1fr; grid-template-rows: 1fr 1fr; gap: .8rem;
+  height: clamp(24rem, 40vw, 36rem);
+}
+.hero-photos figure { margin: 0; overflow: hidden; background: rgba(250,243,224,.06); }
+.hero-photos img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.hp-a { grid-row: 1 / 3; }
+.hp-a img { object-position: 50% 44%; }
+.hp-c img { object-position: 50% 42%; }
+.hero-credit { margin-top: .8rem; font-size: 12px; letter-spacing: .04em; color: var(--on-navy-dim); }
+@media (min-width: 901px) {
+  .hero > .hero-photos { grid-column: 8 / 13; align-self: center; margin-left: clamp(.5rem, 2.4vw, 2.4rem); }
+}
+/* on a phone the pictures come first: a short colour band, then the headline,
+   so the first screen has something to look at instead of only a block of type */
+@media (max-width: 900px) {
+  .hero > .hero-photos { grid-column: 1 / 13; order: -1; margin: 0 0 1.8rem; }
+  .hero-photos-grid { height: min(60vw, 22rem); }
+  .hero > .hero-copy h1.display-xl { font-size: clamp(2.2rem, 9.5vw, 3.2rem); }
+}
+/* a short facts row under the buttons, and the next market in plain words */
+.hero-facts {
+  list-style: none; padding: 0; margin: 1.6rem 0 0; display: flex; flex-wrap: wrap; gap: .5rem 0;
+  font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--on-navy-dim);
+}
+.hero-facts li { padding-right: 1.1rem; margin-right: 1.1rem; border-right: 1px solid var(--rule-navy); }
+.hero-facts li:last-child { border-right: 0; margin-right: 0; padding-right: 0; }
+.hero-next { margin-top: 1.4rem; min-height: 3.6rem; }
+.hero-next a { display: block; max-width: 34rem; padding: .85rem 0 0; border-top: 1px solid var(--rule-navy); color: var(--on-navy); }
+.hero-next .hero-next-label {
+  display: block; font-family: var(--font-display); font-weight: 600; font-size: 11px; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--coral); margin-bottom: .25rem;
+}
+.hero-next strong { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; }
+.hero-next .hero-next-when { display: block; color: var(--on-navy-dim); font-size: 14px; margin-top: .1rem; }
+.hero-next a:hover strong, .hero-next a:focus-visible strong { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- the strip: six close-ups running edge to edge under the hero ---- */
+.photo-strip { position: relative; width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+.strip-row { display: grid; grid-template-columns: repeat(6, 1fr); }
+.strip-row figure { margin: 0; aspect-ratio: 1; overflow: hidden; background: var(--canvas-sunk); }
+.strip-row img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease-expo); }
+.strip-row figure:hover img { transform: scale(1.05); }
+@media (max-width: 900px) { .strip-row { grid-template-columns: repeat(3, 1fr); } }
+.strip-credit { padding: .8rem clamp(1rem, 3vw, 2.4rem) 0; font-size: 12px; letter-spacing: .04em; color: var(--navy-dim); }
+
+/* ---- org details: EIN/address/contact, set as a plain definition list so
+   it reads correctly to a screen reader and to a crawler looking for it —
+   never an image or a decorative card that would hide the actual text. ---- */
+.org-details { display: flex; flex-wrap: wrap; gap: 2.4rem 3rem; }
+.org-details dt { font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--teal); margin-bottom: .3rem; }
+.org-details dd { color: var(--navy-dim); }
+.band-navy .org-details dt { color: var(--on-navy-dim); }
+.band-navy .org-details dd { color: var(--on-navy); }
+
+/* ---- forms: RSVP/newsletter/contact all share .field from canopy.css;
+   this is just the submit-state feedback each one needs. ---- */
+.form-note { font-size: 15px; margin-top: .8rem; }
+.form-note.ok { color: var(--teal); }
+.form-note.err { color: #a33; }
+/* the honeypot — present in the DOM for a bot to fill, invisible and
+   unreachable by tab order for a real visitor */
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* ---- FAQ accordion: same ruled-row language as the events timeline,
+   one open row at a time, no plus/minus icon — the caret already used
+   across the app for expand/collapse. ---- */
+.faq-row { border-bottom: 1px solid var(--rule); }
+.faq-q {
+  width: 100%; text-align: left; background: none; border: 0; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: 1.3rem 0; font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; color: var(--navy);
+}
+.faq-caret { flex: none; width: 10px; height: 10px; border-right: 2px solid var(--navy-dim); border-bottom: 2px solid var(--navy-dim); transform: rotate(45deg); transition: transform var(--dur-quick) var(--ease-expo); }
+.faq-row.open .faq-caret { transform: rotate(-135deg); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height var(--dur-mid) var(--ease-expo); }
+.faq-row.open .faq-a { max-height: 40rem; }
+.faq-a p { padding: 0 0 1.4rem; color: var(--navy-dim); max-width: 60ch; }
+
+/* ---- newsletter strip: the footer's own signup, kept to one line of
+   input + button so it reads as a small ask, not a second form on the page. ---- */
+.newsletter-row { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: 1rem; }
+.newsletter-row input {
+  flex: 1; min-width: 14rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--rule-strong); border-radius: var(--r-xs);
+  background: var(--canvas-card);
+  font-family: var(--font-body); font-size: 15px; color: var(--navy);
+  transition: border-color var(--dur-quick) var(--ease-expo);
+}
+.newsletter-row input::placeholder { color: var(--navy-dim); }
+.newsletter-row input:focus { outline: none; border-color: var(--coral); }
+.footer-band .newsletter-row input {
+  background: rgba(250,243,224,.06); border-color: var(--rule-navy); color: var(--on-navy);
+}
+.footer-band .newsletter-row input::placeholder { color: var(--on-navy-dim); }
+
+@media (max-width: 900px) {
+  .org-details { gap: 1.6rem 2rem; }
+}

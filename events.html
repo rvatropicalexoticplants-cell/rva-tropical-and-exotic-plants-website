@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Richmond Plant Swap &amp; Market Calendar | RVA Tropical</title>
+<meta name="description" content="Every upcoming plant swap, tropical plant market, and workshop in Richmond, VA, with dates, venues, and a free RSVP. Free to walk in.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://rvatropicalandexoticplants.org/events.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Richmond Plant Swap & Plant Market Calendar">
+<meta property="og:description" content="Every upcoming plant swap, tropical plant market, and workshop in Richmond, VA. Free to walk in, with a free RSVP.">
+<meta property="og:url" content="https://rvatropicalandexoticplants.org/events.html">
+<meta property="og:image" content="https://rvatropicalandexoticplants.org/assets/og-share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A close-up of a pink and green caladium leaf beside the text: Plant swaps and tropical plant markets in Richmond, VA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rvatropicalandexoticplants.org/assets/og-share.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://use.typekit.net" crossorigin>
+<link rel="preconnect" href="https://canopy.rvatropicalandexoticplants.org" crossorigin>
+<link rel="stylesheet" href="https://use.typekit.net/sqe3mqq.css">
+<link rel="stylesheet" href="css/canopy.css">
+<link rel="stylesheet" href="css/site.css">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="theme-color" content="#2C3E50">
+</head>
+<body>
+
+<header class="masthead-band">
+  <div class="masthead shell">
+    <a class="brand" href="index.html"><span class="logo logo--mask" role="img" aria-label="RVA Tropical and Exotic Plants, home"></span></a>
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-label="menu" aria-expanded="false" aria-controls="main-nav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav aria-label="main" id="main-nav">
+      <a href="index.html" class="uline">home</a>
+      <a href="events.html" class="uline" aria-current="page">events</a>
+      <a href="get-involved.html" class="uline">get involved</a>
+      <a href="about.html" class="uline">our story</a>
+      <a href="newsletter.html" class="uline">newsletter</a>
+      <a href="contact.html" class="uline">contact</a>
+      <a class="uline door" data-app-link="door.html">sign in</a>
+    </nav>
+  </div>
+</header>
+
+<main class="shell">
+
+  <section class="page-band band-ivory">
+    <div class="reveal" style="max-width:44rem">
+      <p class="overline">the calendar · richmond, va</p>
+      <h1 class="display-xl" style="margin:.5rem 0 1.2rem">Every market, swap, and workshop.</h1>
+      <p style="color:var(--navy-dim)">Come shop, swap, or just look around. Most of what happens here costs nothing but time. Selling instead? <a class="uline" style="color:var(--teal)" href="get-involved.html#vend">Apply for a table here</a>.</p>
+    </div>
+  </section>
+
+  <section id="upcoming">
+    <div class="timeline" id="full-events">
+      <div class="tl-entry-skeleton skeleton-block"></div>
+      <div class="tl-entry-skeleton skeleton-block"></div>
+      <div class="tl-entry-skeleton skeleton-block"></div>
+    </div>
+
+    <div class="idx-rsvp-slot">
+      <div class="idx-rsvp-label">
+        <p class="overline" style="color:var(--teal)">rsvp</p>
+        <p class="small" style="color:var(--navy-dim); margin-top:.3rem">free to just show up</p>
+      </div>
+      <div class="alert-card reveal">
+        <h3 class="display-md" style="margin-bottom:.8rem">Just let us know you're coming.</h3>
+        <p style="margin-bottom:1.6rem">Pick the one you're headed to below. If nothing's open for
+          RSVP yet, it means we haven't announced dates — check back, or
+          <a class="uline" style="color:var(--teal)" href="get-involved.html#volunteer">join the newsletter</a> to hear first.</p>
+        <form id="rsvp-form" novalidate>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 2rem">
+            <label class="field"><span>your name</span>
+              <input type="text" name="name" required autocomplete="name"></label>
+            <label class="field"><span>email</span>
+              <input type="email" name="email" required autocomplete="email"></label>
+            <label class="field"><span>which one</span>
+              <select name="event" id="rsvp-event" required></select></label>
+            <label class="field"><span>how many of you</span>
+              <input type="number" name="party" min="1" max="10" value="1"></label>
+          </div>
+          <label style="display:flex; gap:.6rem; align-items:center; margin-bottom:1.6rem; font-size:15px">
+            <input type="checkbox" name="swap" style="width:auto; accent-color:var(--teal)">
+            I'm bringing a cutting to trade
+          </label>
+          <button class="btn btn-teal" type="submit">Count me in</button>
+          <p class="small" style="color:var(--navy-dim); margin-top:1rem; max-width:52ch">We take photos at our events, so you may
+            appear in one. If you'd rather not, tell a volunteer at the door and we'll leave you out.</p>
+          <p class="form-note" id="rsvp-msg" hidden></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="photos">
+    <div class="divider-slot reveal" data-color="var(--navy)" style="margin-bottom:2rem"></div>
+    <div class="idx-head-spine reveal">
+      <p class="overline">looking back</p>
+      <h2 data-reveal-lines class="display-lg">Photos from past swaps.</h2>
+    </div>
+    <p class="gallery-note reveal">A record of recent swaps, dated and kept here as the community's
+      own history. Photos by John Richardson-Lauve.</p>
+    <p class="gallery-note reveal">If you're in one of these and would rather not be, email
+      <a class="uline" style="color:var(--teal)" href="mailto:info@rvatropicalandexoticplants.org">info@rvatropicalandexoticplants.org</a>
+      and we'll take it down.</p>
+    <div class="gallery-grid" id="past-gallery"></div>
+  </section>
+
+  <section>
+    <div class="divider-slot reveal" data-color="var(--teal)" style="margin-bottom:2rem"></div>
+    <div class="grid-12">
+      <div class="reveal alert-card" style="grid-column:2/12; display:flex; justify-content:space-between; align-items:center; gap:1.6rem; flex-wrap:wrap">
+        <div>
+          <p class="overline" style="color:var(--teal)">want the full toolkit</p>
+          <h3 class="display-md" style="margin:.4rem 0 .2rem">Vendors book their table in the Canopy app.</h3>
+          <p class="small" style="color:var(--navy-dim)">Space inventory, sliding-scale pricing, check-in QR codes, and your booking history all live there — this page just gets you a seat.</p>
+        </div>
+        <a class="btn" data-app-link="index.html#upcoming">Go book a table →</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer-band">
+  <div class="site shell">
+    <div class="foot-brand">
+      <a class="brand" href="index.html"><span class="logo logo--mask" role="img" aria-label="RVA Tropical and Exotic Plants, home"></span></a>
+      <p class="sig">Cultivating Growth, Community, and Connection Through the
+        Shared Love of Plants. That's the whole mission statement. Everything
+        else is just watering schedules.</p>
+      <form id="newsletter-form" novalidate>
+        <label class="field" style="margin-bottom:.8rem"><span>get the newsletter</span></label>
+        <div class="newsletter-row">
+          <input type="email" name="email" placeholder="you@example.com" required autocomplete="email" aria-label="email for the newsletter">
+          <button class="btn-teal" type="submit">Join</button>
+        </div>
+        <p class="form-note" id="newsletter-msg" hidden></p>
+        <p class="form-note"><a class="uline" href="newsletter.html">read every past issue</a></p>
+      </form>
+    </div>
+    <nav class="foot-col" aria-label="footer">
+      <h4>on this site</h4>
+      <a class="uline" href="index.html">home</a>
+      <a class="uline" href="events.html">events</a>
+      <a class="uline" href="plant-swap-richmond-va.html">plant swap guide</a>
+      <a class="uline" href="get-involved.html">get involved</a>
+      <a class="uline" href="about.html">our story</a>
+      <a class="uline" href="newsletter.html">newsletter</a>
+      <a class="uline" href="contact.html">contact</a>
+      <a class="uline" data-app-link="door.html">sign in ↗</a>
+    </nav>
+    <div class="foot-col">
+      <h4>the organization</h4>
+      <p>RVA Tropical &amp; Exotic Plants<br>a 501(c)(3) nonprofit &middot; EIN 93-2911490</p>
+      <a class="uline" href="mailto:info@rvatropicalandexoticplants.org">info@rvatropicalandexoticplants.org</a>
+    </div>
+    <p class="foot-baseline">© <span id="foot-year"></span> RVA Tropical &amp; Exotic Plants · Richmond, Virginia's plant swap community since 2021. Event photography by John Richardson-Lauve.</p>
+  </div>
+</footer>
+
+<div class="lightbox-overlay" id="gallery-lightbox" hidden>
+  <div class="lightbox-panel" style="grid-template-columns:1fr; max-width:56rem">
+    <button class="lightbox-close" type="button" aria-label="close">&times;</button>
+    <div class="lightbox-media"><img id="lightbox-img" src="" alt=""></div>
+    <p class="lightbox-caption" id="lightbox-caption" style="padding:1rem 1.5rem 1.4rem"></p>
+  </div>
+</div>
+
+<script src="js/site.js"></script>
+<script>loadEvents({ hostId: 'full-events' }); loadGallery('past-gallery', { archiveFrom: 12, live: false, limit: 60 });</script>
+</body>
+</html>

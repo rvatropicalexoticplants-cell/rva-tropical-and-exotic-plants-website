@@ -1,0 +1,219 @@
+/* ==========================================================================
+   THE NEWSLETTER on the web: the archive (newsletter.html) and the web
+   edition of one issue (newsletter-issue.html).
+
+   The email is the invitation; this is the room. It keeps the system's
+   voice (crisp rectangles, no rounded corners or shadows, hairlines, calm
+   expo easing) and spends its energy on things a mail client cannot do:
+   a headline that reveals itself, a contents rail that follows you, polls
+   that fill in live, a quiz that tells you whether you were right, a
+   checklist you can tick, a countdown to the market.
+
+   Every colour on an issue page comes from the issue itself (--nl-*), set
+   by js/issue.js from the look the author chose, so a Night issue is dark
+   here too. prefers-reduced-motion switches the movement off, not the
+   function.
+   ========================================================================== */
+
+.nl-page {
+  --nl-page: #2C3E50; --nl-card: #F0E5D8; --nl-ink: #2C3E50; --nl-ink-soft: #3E5568; --nl-ink-dim: #5c6f80;
+  --nl-panel: #FAF3E0; --nl-rule: rgba(44,62,80,.18); --nl-accent: #008080; --nl-on-accent: #FAF3E0; --nl-link: #008080;
+  --nl-on-page: #F0E5D8; --nl-on-page-dim: rgba(240,229,216,.74); --nl-line: rgba(240,229,216,.26); --nl-accent-on-page: #F0E5D8;
+}
+.nl-page .footer-band { margin-top: 0; }
+.nl-page main { background: var(--nl-page); color: var(--nl-on-page); }
+[hidden] { display: none !important; }
+
+/* ---- reading progress: one coral line, the one place coral is spent ---- */
+.nl-progress { position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 80; pointer-events: none; }
+.nl-progress i { display: block; height: 100%; background: var(--coral); transform: scaleX(0); transform-origin: left; will-change: transform; }
+
+/* ---- the opening ------------------------------------------------------- */
+.nl-hero { position: relative; overflow: hidden; padding: clamp(3rem, 8vw, 6.5rem) 0 clamp(2.4rem, 5vw, 3.6rem); }
+.nl-hero .shell { position: relative; z-index: 1; }
+.nl-ghost {
+  position: absolute; right: -1vw; bottom: -.16em; z-index: 0; pointer-events: none; user-select: none; white-space: nowrap;
+  font: 800 clamp(7rem, 24vw, 22rem)/.8 var(--font-display); letter-spacing: -.05em; color: var(--nl-on-page); opacity: .055;
+}
+.nl-kicker { font: 600 12px var(--font-display); letter-spacing: .24em; text-transform: uppercase; color: var(--nl-accent-on-page); margin: 0 0 1rem; }
+.nl-title {
+  font-weight: 700; font-size: clamp(2.7rem, 8.4vw, 6.6rem); line-height: .95; letter-spacing: -.045em;
+  color: var(--nl-on-page); max-width: 15ch; text-wrap: balance; margin: 0 0 1.5rem;
+}
+.nl-deck { max-width: 36rem; margin: 0; font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: var(--nl-on-page-dim); }
+.nl-draw { display: block; height: 3px; width: min(9rem, 40%); margin: 2.2rem 0 1.1rem; background: var(--nl-accent-on-page); transform: scaleX(0); transform-origin: left; transition: transform 1.4s var(--ease-expo) .25s; }
+.nl-draw.in { transform: scaleX(1); }
+.nl-meta { display: flex; flex-wrap: wrap; gap: .4rem 1.8rem; margin: 0; padding: 0; list-style: none; font: 600 11px var(--font-display); letter-spacing: .22em; text-transform: uppercase; color: var(--nl-on-page-dim); }
+.nl-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.8rem; }
+.nl-btn {
+  position: relative; overflow: hidden; isolation: isolate; cursor: pointer; display: inline-flex; align-items: center; gap: .6rem;
+  padding: .95rem 1.5rem; border: 1px solid var(--nl-line); background: transparent; color: var(--nl-on-page);
+  font: 700 12px var(--font-display); letter-spacing: .16em; text-transform: uppercase; border-radius: var(--r-xs);
+}
+.nl-btn::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--nl-on-page); opacity: .14; transform: scaleX(0); transform-origin: left; transition: transform var(--dur-mid) var(--ease-expo); }
+.nl-btn:hover::before, .nl-btn:focus-visible::before { transform: scaleX(1); }
+.nl-btn--solid { background: var(--nl-on-page); color: var(--nl-page); border-color: var(--nl-on-page); }
+.nl-btn--solid::before { background: var(--nl-accent-on-page); opacity: 1; }
+.nl-btn--solid:hover { color: var(--nl-page); }
+
+.nl-skel { display: grid; gap: 1.2rem; }
+.nl-skel span { display: block; height: clamp(2.6rem, 7vw, 5rem); background: var(--nl-on-page); opacity: .09; animation: nl-pulse 1.8s var(--ease-power) infinite; }
+.nl-skel span:nth-child(2) { width: 70%; animation-delay: .2s; }
+.nl-skel span:nth-child(3) { width: 45%; height: 1.4rem; animation-delay: .4s; }
+@keyframes nl-pulse { 0%, 100% { opacity: .06; } 50% { opacity: .16; } }
+
+/* ---- the reading room: contents rail, the paper, air ------------------- */
+.nl-body { padding: clamp(1.6rem, 4vw, 3rem) 0 clamp(3rem, 6vw, 5rem); }
+.nl-grid { width: var(--shell); margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 668px) minmax(0, 1fr); gap: clamp(1.5rem, 3vw, 3.5rem); align-items: start; }
+.nl-paper { background: var(--nl-card); color: var(--nl-ink); border-left: 6px solid var(--nl-accent); padding: 40px 32px; max-width: 590px; width: 100%; margin-inline: auto; font-family: var(--font-body); }
+.nl-paper img { max-width: 100%; height: auto; }
+.nl-paper a { cursor: pointer; }
+@media (min-width: 900px) { @supports (zoom: 1) { .nl-paper { zoom: 1.13; } } }
+.nl-paper [id^="sec-"] { scroll-margin-top: 6rem; }
+.nl-paper > div > * { transition-delay: 0s; }
+
+.nl-rail { position: sticky; top: 2rem; justify-self: end; width: min(15rem, 100%); padding-left: 1.1rem; }
+.nl-rail h2 { margin: 0 0 1rem; font: 600 11px var(--font-display); letter-spacing: .24em; text-transform: uppercase; color: var(--nl-on-page-dim); }
+.nl-rail ol { list-style: none; margin: 0; padding: 0; }
+.nl-rail a { display: grid; grid-template-columns: 2rem 1fr; align-items: baseline; padding: .62rem 0; border-top: 1px solid var(--nl-line); color: var(--nl-on-page-dim); font: 600 13px/1.3 var(--font-display); transition: color var(--dur-quick) var(--ease-expo); }
+.nl-rail li:last-child a { border-bottom: 1px solid var(--nl-line); }
+.nl-rail a .n { color: var(--nl-accent-on-page); font-weight: 700; font-variant-numeric: tabular-nums; }
+.nl-rail a:hover, .nl-rail a.on { color: var(--nl-on-page); }
+.nl-rail a.on .t { text-decoration: underline; text-underline-offset: .28em; text-decoration-thickness: 1px; }
+.nl-rail .track { position: absolute; left: 0; top: 2.1rem; bottom: .2rem; width: 2px; background: var(--nl-line); }
+.nl-rail .fill { position: absolute; left: 0; top: 0; width: 2px; height: 100%; background: var(--nl-accent-on-page); transform: scaleY(var(--p, 0)); transform-origin: top; }
+@media (max-width: 1099px) {
+  .nl-grid { grid-template-columns: minmax(0, 668px); justify-content: center; }
+  .nl-rail, .nl-side { display: none; }
+}
+@media (max-width: 640px) {
+  .nl-grid { width: 100%; }
+  .nl-paper { padding: 28px 18px; border-left-width: 4px; }
+}
+/* on a wide screen the rail does the contents list's job, so the one inside the issue steps aside */
+@media (min-width: 1100px) { .nl-paper .nl-inline-toc { display: none; } }
+
+/* ---- polls and quizzes ------------------------------------------------- */
+.nl-paper [data-poll] .nl-opts { display: grid; gap: .5rem; margin: 0 0 .6rem; }
+.nl-opt {
+  position: relative; overflow: hidden; isolation: isolate; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: .8rem;
+  width: 100%; text-align: left; padding: 14px 16px; border: 2px solid var(--nl-ink); background: transparent; color: var(--nl-ink);
+  font: 700 15px var(--font-display); cursor: pointer; border-radius: 0; transition: border-color var(--dur-quick) var(--ease-expo);
+}
+.nl-opt::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--nl-accent); opacity: .17; transform: scaleX(var(--w, 0)); transform-origin: left; transition: transform 1s var(--ease-expo); }
+.nl-opt::after { content: ""; position: absolute; inset: 0; z-index: -2; background: var(--nl-accent); opacity: .1; transform: scaleX(0); transform-origin: left; transition: transform var(--dur-mid) var(--ease-expo); }
+.nl-opt:hover::after, .nl-opt:focus-visible::after { transform: scaleX(1); }
+.nl-opt .pct { font-variant-numeric: tabular-nums; color: var(--nl-ink-soft); }
+.nl-opt.mine { border-color: var(--nl-accent); }
+.nl-opt.mine .lbl::after { content: " \2713"; color: var(--nl-accent); }
+.nl-opt.right { border-color: var(--nl-accent); }
+.nl-opt.right::before { opacity: .3; }
+.nl-opt.wrong { border-color: #FF6F61; }
+.nl-opt.wrong::before { background: #FF6F61; }
+.nl-pollnote { margin: .2rem 0 0; font: 400 13px/1.5 var(--font-body); color: var(--nl-ink-soft); min-height: 1.5em; }
+.nl-polltools { margin-top: .3rem; font: 600 12px var(--font-display); letter-spacing: .06em; }
+.nl-link { background: none; border: 0; padding: 0; cursor: pointer; color: var(--nl-link); font: inherit; text-decoration: underline; text-underline-offset: .22em; }
+.nl-verdict { margin: .8rem 0 0; padding: 14px 16px; border-left: 4px solid var(--nl-accent); background: var(--nl-card); }
+.nl-verdict b { display: block; font: 700 17px var(--font-display); color: var(--nl-ink); margin-bottom: .2rem; }
+.nl-verdict p { margin: 0; font: 400 15px/1.6 var(--font-body); color: var(--nl-ink-soft); }
+.nl-verdict.no { border-left-color: #FF6F61; }
+
+/* a short burst of crisp rectangles in the brand colours; gone in under two seconds */
+.nl-confetti { position: fixed; inset: 0; z-index: 90; pointer-events: none; overflow: hidden; }
+.nl-confetti i { position: absolute; left: var(--x); top: var(--y); width: 8px; height: 14px; background: var(--c); transform: translate(0, 0) rotate(0); opacity: 1; animation: nl-burst 1.7s cubic-bezier(.16, .84, .3, 1) forwards; }
+@keyframes nl-burst {
+  35% { transform: translate(calc(var(--dx) * .7), var(--py)) rotate(calc(var(--r) * .6)); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--fy)) rotate(var(--r)); opacity: 0; }
+}
+
+/* ---- a checklist you can tick ------------------------------------------ */
+.nl-paper tr[data-check] { cursor: pointer; }
+.nl-paper tr[data-check] td:first-child td { transition: background var(--dur-quick) var(--ease-expo); }
+.nl-paper tr[data-check].done td:first-child td { background: var(--nl-accent); }
+.nl-paper tr[data-check] td:last-child { transition: opacity var(--dur-quick) var(--ease-expo); }
+.nl-paper tr[data-check].done td:last-child { opacity: .5; text-decoration: line-through; }
+.nl-gathered { margin: -.6rem 0 1.4rem; font: 600 12px var(--font-display); letter-spacing: .12em; text-transform: uppercase; color: var(--nl-ink-dim); }
+
+/* ---- the market, counted down; the vendors, searchable ------------------ */
+.nl-count { display: block; margin: 0 0 .7rem; font: 700 11px var(--font-display); letter-spacing: .22em; text-transform: uppercase; color: #FAF3E0; }
+.nl-find { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1rem; margin: 0 0 .9rem; }
+.nl-find input { flex: 1 1 10rem; min-width: 0; border: 0; border-bottom: 1px solid var(--nl-ink); background: transparent; padding: .45rem 0; font: 400 15px var(--font-body); color: var(--nl-ink); border-radius: 0; }
+.nl-find input:focus { outline: none; border-bottom-width: 2px; }
+.nl-find small { font: 600 11px var(--font-display); letter-spacing: .14em; text-transform: uppercase; color: var(--nl-ink-dim); }
+.nl-none { margin: .6rem 0 0; font: 400 14px var(--font-body); color: var(--nl-ink-soft); }
+
+/* ---- after the last word: older issue, newer issue, the invitation ------- */
+.nl-after { padding: clamp(2.4rem, 5vw, 4rem) 0 clamp(3rem, 6vw, 5rem); border-top: 1px solid var(--nl-line); }
+.nl-after .shell { display: grid; gap: clamp(1.4rem, 3vw, 2.4rem); }
+.nl-pn { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.nl-pn a { display: block; padding: 1.2rem 0; border-top: 1px solid var(--nl-line); color: var(--nl-on-page); }
+.nl-pn a span { display: block; font: 600 11px var(--font-display); letter-spacing: .22em; text-transform: uppercase; color: var(--nl-on-page-dim); margin-bottom: .5rem; }
+.nl-pn a strong { display: block; font: 700 clamp(1.2rem, 2.4vw, 1.7rem)/1.15 var(--font-display); letter-spacing: -.02em; }
+.nl-pn a:hover strong { text-decoration: underline; text-underline-offset: .2em; text-decoration-thickness: 1px; }
+.nl-pn .next { text-align: right; }
+.nl-cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.2rem; padding: clamp(1.4rem, 3vw, 2.2rem); background: var(--nl-card); color: var(--nl-ink); border-left: 6px solid var(--nl-accent); }
+.nl-cta h2 { margin: 0; font: 700 clamp(1.3rem, 2.8vw, 2rem)/1.1 var(--font-display); letter-spacing: -.02em; }
+.nl-cta p { margin: .3rem 0 0; font: 400 15px/1.5 var(--font-body); color: var(--nl-ink-soft); }
+.nl-cta .nl-btn { color: var(--nl-ink); border-color: var(--nl-ink); }
+.nl-cta .nl-btn::before { background: var(--nl-ink); opacity: .1; }
+
+.nl-message { padding: clamp(4rem, 10vw, 8rem) 0; }
+.nl-message .shell { max-width: 40rem; }
+.nl-message h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1; letter-spacing: -.035em; margin: 0 0 1rem; color: var(--nl-on-page); }
+.nl-message p { font-size: 1.1rem; line-height: 1.6; color: var(--nl-on-page-dim); margin: 0 0 1.4rem; }
+
+.nl-toast { position: fixed; left: 50%; bottom: 1.6rem; transform: translateX(-50%); z-index: 95; padding: .9rem 1.4rem; background: #101C30; color: #FAF3E0; font: 600 13px var(--font-display); letter-spacing: .06em; border-left: 4px solid var(--coral); max-width: min(92vw, 28rem); }
+
+/* ---- the archive --------------------------------------------------------- */
+.na-tools { display: flex; flex-wrap: wrap; align-items: end; gap: 1rem 2rem; margin-bottom: 2.4rem; }
+.na-search { flex: 1 1 16rem; max-width: 26rem; }
+.na-search input { width: 100%; border: 0; border-bottom: 1px solid var(--rule-strong); background: transparent; padding: .7rem 0; font: 400 16px var(--font-body); color: var(--navy); border-radius: 0; }
+.na-search input:focus { outline: none; border-bottom-color: var(--navy); }
+.na-years { display: flex; flex-wrap: wrap; gap: .5rem; }
+.na-years button { border: 1px solid var(--rule-strong); background: transparent; padding: .5rem .9rem; font: 700 11px var(--font-display); letter-spacing: .18em; text-transform: uppercase; color: var(--navy); cursor: pointer; border-radius: var(--r-xs); }
+.na-years button[aria-pressed="true"] { background: var(--navy); color: var(--ivory); border-color: var(--navy); }
+
+.na-cover {
+  --c-page: #2C3E50; --c-on: #F0E5D8; --c-on-dim: rgba(240,229,216,.74); --c-accent: #008080; --c-accent-on: #F0E5D8;
+  position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 1.6rem;
+  background: var(--c-page); color: var(--c-on); border-top: 6px solid var(--c-accent);
+}
+.na-cover:focus-visible { outline-offset: 4px; }
+.na-cover .k { font: 600 11px var(--font-display); letter-spacing: .24em; text-transform: uppercase; color: var(--c-accent-on); margin: 0 0 .8rem; }
+.na-cover h2, .na-cover h3 { margin: 0; color: var(--c-on); font-weight: 700; letter-spacing: -.035em; line-height: 1; text-wrap: balance; }
+.na-cover .d { margin: .8rem 0 0; color: var(--c-on-dim); line-height: 1.5; }
+.na-cover .m { display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; margin: 0; padding: 1rem 0 0; border-top: 1px solid var(--c-on-dim); list-style: none; font: 600 11px var(--font-display); letter-spacing: .2em; text-transform: uppercase; color: var(--c-on-dim); }
+.na-cover::after { content: ""; position: absolute; left: 0; bottom: 0; height: 4px; width: 100%; background: var(--c-accent-on); transform: scaleX(0); transform-origin: left; transition: transform var(--dur-mid) var(--ease-expo); }
+.na-cover:hover::after, .na-cover:focus-visible::after { transform: scaleX(1); }
+.na-ghost { position: absolute; right: -.04em; bottom: -.2em; font: 800 clamp(6rem, 14vw, 11rem)/.8 var(--font-display); letter-spacing: -.05em; color: var(--c-on); opacity: .06; pointer-events: none; white-space: nowrap; }
+
+/* on the small covers the ghost month sits in the top corner, clear of the details row */
+.na-card .na-ghost { top: -.14em; bottom: auto; right: .02em; font-size: 6.4rem; opacity: .07; }
+.na-feature { display: block; margin-bottom: clamp(2.4rem, 5vw, 4rem); }
+.na-feature .na-cover { padding: clamp(1.6rem, 4vw, 3.4rem); min-height: clamp(18rem, 36vw, 26rem); }
+.na-feature .na-cover h2 { font-size: clamp(2.2rem, 6vw, 4.6rem); max-width: 14ch; }
+.na-feature .na-cover .d { font-size: clamp(1.05rem, 1.6vw, 1.3rem); max-width: 34rem; }
+.na-feature .na-cover .go { display: inline-block; margin-top: 1.2rem; font: 700 12px var(--font-display); letter-spacing: .18em; text-transform: uppercase; }
+.na-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr)); gap: 1.4rem; }
+.na-card { display: block; }
+.na-card .na-cover { padding: 1.5rem; min-height: 17rem; }
+.na-card .na-cover h3 { font-size: clamp(1.4rem, 2.2vw, 1.9rem); }
+.na-card .na-cover .d { font-size: .95rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.na-year { margin: 2.6rem 0 1.1rem; }
+.na-legacy { display: block; padding: 1.4rem 0; border-top: 1px solid var(--rule-strong); }
+.na-legacy h3 { margin: 0 0 .3rem; }
+.na-empty { padding: 2rem 0; color: var(--navy-dim); }
+.na-skel { display: grid; grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr)); gap: 1.4rem; }
+.na-skel span { display: block; height: 17rem; background: var(--canvas-sunk); animation: nl-pulse 1.8s var(--ease-power) infinite; }
+.na-skel span:nth-child(2) { animation-delay: .2s; } .na-skel span:nth-child(3) { animation-delay: .4s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nl-progress i, .nl-draw, .nl-opt::before, .nl-opt::after, .nl-btn::before, .na-cover::after { transition: none; }
+  .nl-draw { transform: scaleX(1); }
+  .nl-skel span, .na-skel span { animation: none; opacity: .12; }
+  .nl-confetti { display: none; }
+}
+@media (max-width: 640px) {
+  .nl-pn { grid-template-columns: 1fr; }
+  .nl-pn .next { text-align: left; }
+}
